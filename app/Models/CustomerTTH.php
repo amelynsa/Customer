@@ -9,13 +9,10 @@ class CustomerTTH extends Model
 {
     use HasFactory;
 
-    // 💡 Tulis nama tabel persis seperti di database
     protected $table = 'customer_tth';
 
-    // Jika primary key bukan id
     protected $primaryKey = 'ID';
 
-    // Kalau tabel tidak punya created_at / updated_at
     public $timestamps = false;
 
     protected $fillable = [
