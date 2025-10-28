@@ -1,0 +1,191 @@
+**Schema (MySQL v5.7)**
+
+    -- Table A: History Kode Toko
+    CREATE TABLE table_a (
+      kode_toko_baru bigint(20) UNSIGNED NOT NULL,
+      kode_toko_lama int(11) DEFAULT NULL
+    );
+    
+    INSERT INTO table_a (kode_toko_baru, kode_toko_lama) VALUES
+    (1, 6),
+    (2, NULL),
+    (3, 7),
+    (4, 9),
+    (5, 8);
+    
+    -- Table B: Penjualan
+    CREATE TABLE table_b (
+      kode_toko bigint(20) UNSIGNED NOT NULL,
+      nominal_transaksi decimal(8,2) NOT NULL
+    );
+    
+    INSERT INTO table_b (kode_toko, nominal_transaksi) VALUES
+    (1, '1000.00'),
+    (2, '1000.00'),
+    (4, '1000.00'),
+    (6, '1000.00'),
+    (7, '1000.00');
+    
+    -- Table C: Area Sales
+    CREATE TABLE table_c (
+      kode_toko bigint(20) UNSIGNED NOT NULL,
+      area_sales varchar(10) NOT NULL
+    );
+    
+    INSERT INTO table_c (kode_toko, area_sales) VALUES
+    (1, 'A'),
+    (2, 'A'),
+    (3, 'A'),
+    (4, 'B'),
+    (5, 'B');
+    
+    -- Table D: Master Sales
+    CREATE TABLE table_d (
+      kode_sales varchar(255) NOT NULL,
+      nama_sales varchar(20) NOT NULL
+    );
+    
+    INSERT INTO table_d (kode_sales, nama_sales) VALUES
+    ('A1', 'Alpha'),
+    ('A2', 'Blue'),
+    ('A3', 'Charlie'),
+    ('B1', 'Delta'),
+    ('B2', 'Echo');
+    
+
+---
+
+**Query #2**
+
+    SELECT 
+        a.kode_toko_baru,
+        SUM(b.nominal_transaksi) AS nominal_transaksi
+    FROM 
+        table_a a
+    LEFT JOIN 
+        table_b b 
+        ON b.kode_toko = a.kode_toko_baru 
+        OR b.kode_toko = a.kode_toko_lama
+    GROUP BY 
+        a.kode_toko_baru
+    ORDER BY 
+        a.kode_toko_baru;
+
+| kode_toko_baru | nominal_transaksi |
+| -------------- | ----------------- |
+| 1              | 2000.00           |
+| 2              | 1000.00           |
+| 3              | 1000.00           |
+| 4              | 1000.00           |
+| 5              |                   |
+
+---
+
+[View on DB Fiddle](https://www.db-fiddle.com/f/wafwvGBWeTmDKN51RRHih7/2)
+
+**Query #2**
+
+    SELECT 
+        a.kode_toko_baru
+    FROM 
+        table_a a
+    JOIN 
+        table_b b 
+        ON b.kode_toko = a.kode_toko_baru 
+        OR b.kode_toko = a.kode_toko_lama
+    GROUP BY 
+        a.kode_toko_baru
+    ORDER BY 
+        a.kode_toko_baru;
+
+| kode_toko_baru |
+| -------------- |
+| 1              |
+| 2              |
+| 3              |
+| 4              |
+
+---
+
+[View on DB Fiddle](https://www.db-fiddle.com/f/wafwvGBWeTmDKN51RRHih7/2)
+
+
+**Query #3**
+
+    SELECT 
+        kode_toko_baru,
+        nominal_transaksi
+    FROM (
+        SELECT 
+            a.kode_toko_baru,
+            SUM(b.nominal_transaksi) AS nominal_transaksi
+        FROM 
+            table_a a
+        LEFT JOIN 
+            table_b b 
+            ON b.kode_toko = a.kode_toko_baru 
+            OR b.kode_toko = a.kode_toko_lama
+        GROUP BY 
+            a.kode_toko_baru
+    ) AS sub
+    ORDER BY 
+        nominal_transaksi DESC
+    LIMIT 1;
+
+| kode_toko_baru | nominal_transaksi |
+| -------------- | ----------------- |
+| 1              | 2000.00           |
+
+---
+
+[View on DB Fiddle](https://www.db-fiddle.com/f/wafwvGBWeTmDKN51RRHih7/2)
+
+
+**Query #4**
+
+    SELECT 
+        c.kode_toko,
+        CASE 
+            WHEN c.area_sales = 'A' THEN 'Charlie'
+            WHEN c.area_sales = 'B' THEN 'Echo'
+        END AS nama_sales
+    FROM table_c c
+    ORDER BY c.kode_toko;
+
+| kode_toko | nama_sales |
+| --------- | ---------- |
+| 1         | Charlie    |
+| 2         | Charlie    |
+| 3         | Charlie    |
+| 4         | Echo       |
+| 5         | Echo       |
+
+---
+
+[View on DB Fiddle](https://www.db-fiddle.com/f/wafwvGBWeTmDKN51RRHih7/2)
+
+
+
+**Query #5**
+
+    SELECT 
+        CASE 
+            WHEN c.area_sales = 'A' THEN 'Charlie'
+            WHEN c.area_sales = 'B' THEN 'Echo'
+        END AS nama_sales,
+        SUM(b.nominal_transaksi) AS nominal_transaksi
+    FROM table_a a
+    JOIN table_b b 
+        ON b.kode_toko = a.kode_toko_baru OR b.kode_toko = a.kode_toko_lama
+    JOIN table_c c 
+        ON c.kode_toko = a.kode_toko_baru
+    GROUP BY nama_sales;
+
+| nama_sales | nominal_transaksi |
+| ---------- | ----------------- |
+| Charlie    | 4000.00           |
+| Echo       | 1000.00           |
+
+---
+
+[View on DB Fiddle](https://www.db-fiddle.com/f/wafwvGBWeTmDKN51RRHih7/2)

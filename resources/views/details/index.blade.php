@@ -23,7 +23,8 @@
             <td>{{ $d->Qty }}</td>
             <td>{{ $d->Unit }}</td>
             <td>
-                <a href="{{ route('customer-tth.show', $tth->id) }}" class="btn btn-info btn-sm">Detail</a>
+                <a href="{{ route('customer-tth.show', $d->TTHNo) }}" class="btn btn-info btn-sm">Detail</a>
+
                 <form action="{{ route('customer-tth-detail.destroy',$d->ID) }}" method="POST" class="d-inline">
                     @csrf
                     @method('DELETE')

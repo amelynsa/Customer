@@ -1,31 +1,43 @@
 @extends('layouts.app')
-
 @section('content')
-<h3>Detail TTH: {{ $customerTTH->TTHNo }}</h3>
-<p><strong>Customer:</strong> {{ $customerTTH->customer->Name }}</p>
-<p><strong>SalesID:</strong> {{ $customerTTH->SalesID }}</p>
+<div class="d-flex justify-content-between mb-2">
+    <h2>TTH Detail - {{ $tth->TTHNo }}</h2>
+</div>
 
-<h4>Hadiah</h4>
 <table class="table table-bordered">
-<tr>
-    <th>ID</th><th>Jenis</th><th>Qty</th><th>Unit</th><th>Aksi</th>
-</tr>
-@foreach($details as $d)
-<tr>
-    <td>{{ $d->ID }}</td>
-    <td>{{ $d->Jenis }}</td>
-    <td>{{ $d->Qty }}</td>
-    <td>{{ $d->Unit }}</td>
-    <td>
-        <a href="{{ route('customer-tth-detail.edit',$d->ID) }}" class="btn btn-warning btn-sm">Edit</a>
-        <form action="{{ route('customer-tth-detail.destroy',$d->ID) }}" method="POST" style="display:inline">
-            @csrf
-            @method('DELETE')
-            <button class="btn btn-danger btn-sm">Hapus</button>
-        </form>
-    </td>
-</tr>
-@endforeach
+    <thead>
+        <tr>
+            <th>TTHNo</th>
+            <th>TTOTTPNo</th>
+            <th>Jenis</th>
+            <th>Qty</th>
+            <th>Unit</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if($details && count($details) > 0)
+            @foreach($details as $d)
+                <tr>
+                    <td>{{ $d->TTHNo }}</td>
+                    <td>{{ $d->TTOTTPNo }}</td>
+                    <td>{{ $d->Jenis }}</td>
+                    <td>{{ $d->Qty }}</td>
+                    <td>{{ $d->Unit }}</td>
+                    <td>
+                        <form action="{{ route('customer-tth-detail.destroy', $d->ID) }}" method="POST" class="d-inline">
+                            @csrf
+                            @method('DELETE')
+                            <button class="btn btn-danger btn-sm" onclick="return confirm('Yakin hapus?')">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            @endforeach
+        @else
+            <tr>
+                <td colspan="6" class="text-center">Belum ada detail untuk TTH ini.</td>
+            </tr>
+        @endif
+    </tbody>
 </table>
-<a href="{{ route('customer-tth.index') }}" class="btn btn-secondary">Kembali</a>
 @endsection

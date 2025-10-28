@@ -21,6 +21,8 @@ Route::resource('customers', CustomerController::class)->except(['edit','update'
 Route::resource('customer-tth', CustomerTTHController::class)->except(['edit','update']);
 Route::resource('customer-tth-detail', CustomerTTHDetailController::class)->only(['edit','update','destroy']);
 
+    Route::get('customer-tth/{tthno}', [CustomerTTHController::class, 'show'])
+    ->name('customer-tth.show');
 
 Route::get('/', function () {
     return view('welcome');

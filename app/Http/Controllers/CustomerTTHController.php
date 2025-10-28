@@ -18,8 +18,8 @@ class CustomerTTHController extends Controller {
 
     public function store(Request $request) {
         $request->validate([
-            'TTHNo'=>'required|unique:CustomerTTH,TTHNo',
-            'CustID'=>'required|exists:Customer,CustID',
+            'TTHNo' => 'required|unique:customer_tth,TTHNo',
+            'CustID' => 'required|exists:customer,CustID',
             'SalesID'=>'required',
             'TTOTTPNo'=>'required',
             'DocDate'=>'required',
@@ -44,14 +44,22 @@ class CustomerTTHController extends Controller {
         return redirect()->route('customer-tth.index')->with('success','TTH added');
     }
 
-    public function show(CustomerTTH $customer_tth)
+public function show($tthno)
 {
-    // $customer_tth sudah otomatis diambil dari DB
-    return view('customer_tth.show', compact('customer_tth'));
+    $tth = CustomerTTH::where('TTHNo', $tthno)
+        ->with(['details', 'customer'])
+        ->firstOrFail();
+
+    $details = $tth->details; // ambil data detail-nya
+
+    return view('tths.show', compact('tth', 'details'));
 }
 
-    public function destroy(CustomerTTH $customerTTH) {
-        $customerTTH->delete();
-        return redirect()->route('customer-tth.index')->with('success','TTH deleted');
-    }
+
+public function destroy(CustomerTTH $customerTTH)
+{
+    $customerTTH->delete();
+    return redirect()->route('customer-tth.index')->with('success', 'TTH deleted');
+}
+
 }

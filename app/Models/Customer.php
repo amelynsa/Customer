@@ -8,6 +8,15 @@ class Customer extends Model {
     public $incrementing = false;
     public $timestamps = false;
 
+    // ✅ Kolom yang boleh diisi dari form
+    protected $fillable = [
+        'CustID',
+        'Name',
+        'Address',
+        'BranchCode',
+        'PhoneNo',
+    ];
+
     public function tths() {
         return $this->hasMany(CustomerTTH::class, 'CustID', 'CustID');
     }
